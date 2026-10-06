@@ -755,9 +755,33 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static(path.join(__dirname, 'dist')));
+    // 1. Serve individual standalone apps
+    const scytherDist = path.join(__dirname, 'apps/scyther/dist');
+    const rubricDist = path.join(__dirname, 'apps/rubric/dist');
+    const aegisDist = path.join(__dirname, 'apps/aegis/dist');
+    const crucibleDist = path.join(__dirname, 'apps/crucible/dist');
+    const torrentDist = path.join(__dirname, 'apps/torrent/dist');
+
+    app.use('/scyther', express.static(scytherDist));
+    app.get(['/scyther', '/scyther/*'], (_req, res) => res.sendFile(path.join(scytherDist, 'index.html')));
+
+    app.use('/rubric', express.static(rubricDist));
+    app.get(['/rubric', '/rubric/*'], (_req, res) => res.sendFile(path.join(rubricDist, 'index.html')));
+
+    app.use('/aegis', express.static(aegisDist));
+    app.get(['/aegis', '/aegis/*'], (_req, res) => res.sendFile(path.join(aegisDist, 'index.html')));
+
+    app.use('/crucible', express.static(crucibleDist));
+    app.get(['/crucible', '/crucible/*'], (_req, res) => res.sendFile(path.join(crucibleDist, 'index.html')));
+
+    app.use('/torrent', express.static(torrentDist));
+    app.get(['/torrent', '/torrent/*'], (_req, res) => res.sendFile(path.join(torrentDist, 'index.html')));
+
+    // 2. Root Sovereign Master Suite fallback
+    const rootDist = path.join(__dirname, 'dist');
+    app.use(express.static(rootDist));
     app.get('*', (_req, res) => {
-      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+      res.sendFile(path.join(rootDist, 'index.html'));
     });
   }
 
