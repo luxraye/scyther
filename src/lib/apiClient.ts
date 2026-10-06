@@ -1,9 +1,27 @@
 import type { InterAppEvent, EventType, BloodchainAppId, TelemetryPingPayload } from '../types/events';
 
-// Default API base URL matches the current host or port 3000
-const API_BASE = typeof window !== 'undefined' 
-  ? (window.location.port === '3000' ? '' : 'http://localhost:3000') 
-  : (process.env.API_GATEWAY_URL || 'http://localhost:3000');
+const getApiBase = (): string => {
+  if (typeof window !== 'undefined') {
+    let envUrl = (import.meta as any).env?.VITE_API_GATEWAY_URL;
+    if (envUrl) {
+      if (!envUrl.startsWith('http://') && !envUrl.startsWith('https://')) {
+        envUrl = `https://${envUrl}`;
+      }
+      return envUrl.replace(/\/$/, '');
+    }
+
+    // Local dev: separate ports 3002-3006 forward to local gateway port 3000
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return window.location.port === '3000' ? '' : 'http://localhost:3000';
+    }
+
+    // Production: same origin (unified container)
+    return window.location.origin;
+  }
+  return process.env.API_GATEWAY_URL || 'http://localhost:3000';
+};
+
+const API_BASE = getApiBase();
 
 export interface EventSubscriptionOptions {
   types?: EventType[];

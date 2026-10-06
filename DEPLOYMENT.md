@@ -133,26 +133,102 @@ Container access points:
 - Aegis Tablet: `http://localhost:3004`
 - Crucible Lab: `http://localhost:3005`
 - Torrent Logistics: `http://localhost:3006`
+- Caddy SSL Proxy (Ports 80 & 443): automatically provisions Let's Encrypt certificates for all your subdomains!
 
 ---
 
-## 5. Cloud Deployment Options
+## 5. Overcoming PaaS Service Caps: Multi-Domain Deployment Options
 
-### Option A: Google Cloud Run (Recommended for Scalability)
-1. Build and push the server container:
+Render's free tier restricts accounts to 1–2 active web services. When deploying 5 standalone clinical applications and an API gateway, each requiring its own custom subdomain (e.g. `scyther.yourdomain.com`, `rubric.yourdomain.com`, `aegis.yourdomain.com`), the following three options provide **unlimited subdomains without arbitrary PaaS caps**:
+
+### Option A: Firebase Hosting Multi-Site (Recommended — 100% Free, Up to 36 Sites)
+
+Since Bloodchain already uses Firebase Auth and Cloud Storage (`gen-lang-client-0545872704`), you can use **Firebase Hosting Multi-Site**. A single Firebase project can host up to **36 separate websites**, each with its own custom domain and automatic Google SSL:
+
+1. **Create Site Targets in Firebase Console**:
+   Under **Build -> Hosting**, click **"Add another site"** to create:
+   - `bloodchain-scyther`
+   - `bloodchain-rubric`
+   - `bloodchain-aegis`
+   - `bloodchain-crucible`
+   - `bloodchain-torrent`
+   - `bloodchain-portal`
+
+2. **Deploy All Frontends at Once**:
+   The included [`firebase.json`](file:///c:/Users/Taylith/scyther/firebase.json) is already pre-configured:
    ```bash
-   gcloud builds submit --tag gcr.io/[PROJECT_ID]/bloodchain-gateway --target server
-   gcloud run deploy bloodchain-gateway --image gcr.io/[PROJECT_ID]/bloodchain-gateway --port 3000 --allow-unauthenticated
-   ```
-2. Build and deploy each frontend container to Cloud Run or Firebase Hosting.
+   firebase target:apply hosting scyther bloodchain-scyther
+   firebase target:apply hosting rubric bloodchain-rubric
+   firebase target:apply hosting aegis bloodchain-aegis
+   firebase target:apply hosting crucible bloodchain-crucible
+   firebase target:apply hosting torrent bloodchain-torrent
+   firebase target:apply hosting portal bloodchain-portal
 
-### Option B: Firebase Hosting (Frontends) + Render/Cloud Run (Gateway)
-- Deploy frontend static builds from `apps/[app-name]/dist` to Firebase Hosting targets using multi-site hosting in `firebase.json`.
-- Point `API_BASE` in `@shared/lib/apiClient.ts` to your deployed gateway URL.
+   firebase deploy --only hosting
+   ```
+
+3. **Attach Custom Domains**:
+   In Firebase Console -> Hosting -> Select each site -> Click **"Add custom domain"**:
+   - `scyther.yourdomain.com`
+   - `rubric.yourdomain.com`
+   - `aegis.yourdomain.com`
+   - `crucible.yourdomain.com`
+   - `torrent.yourdomain.com`
+   Google automatically provisions SSL certificates and handles global CDN edge distribution.
 
 ---
 
-## 6. Environment Variables
+### Option B: Cloudflare Pages (100% Free, Unlimited Sites & Domains)
+
+Cloudflare Pages provides **unlimited sites**, **unlimited subdomains**, and **unlimited bandwidth** on its free tier:
+
+1. In Cloudflare Dashboard, go to **Workers & Pages** -> **Create application** -> **Pages** -> **Connect to Git**.
+2. Select repository `luxraye/scyther`.
+3. Create a project for each application:
+   | Project Name | Framework Preset | Root Directory | Build Command | Output Directory |
+   | :--- | :--- | :--- | :--- | :--- |
+   | `bloodchain-scyther` | Vite | `apps/scyther` | `npm run build:scyther` | `dist` |
+   | `bloodchain-rubric` | Vite | `apps/rubric` | `npm run build:rubric` | `dist` |
+   | `bloodchain-aegis` | Vite | `apps/aegis` | `npm run build:aegis` | `dist` |
+   | `bloodchain-crucible` | Vite | `apps/crucible` | `npm run build:crucible` | `dist` |
+   | `bloodchain-torrent` | Vite | `apps/torrent` | `npm run build:torrent` | `dist` |
+4. Go to **Custom domains** on each Pages project and bind `*.yourdomain.com`. Cloudflare automatically provisions edge certificates with 0 configuration.
+
+---
+
+### Option C: Single VPS + Docker Compose & Caddy ($4–$5/mo Sovereign Stack)
+
+For complete data sovereignty without third-party platform constraints, run the entire stack on any cheap VPS (Hetzner, DigitalOcean, Linode, AWS Lightsail) using the included [`docker-compose.yml`](file:///c:/Users/Taylith/scyther/docker-compose.yml) and [`Caddyfile`](file:///c:/Users/Taylith/scyther/Caddyfile):
+
+1. Point DNS A-records to your VPS IP:
+   - `yourdomain.com` $\rightarrow$ `YOUR_VPS_IP`
+   - `*.yourdomain.com` $\rightarrow$ `YOUR_VPS_IP`
+2. Launch with your domain:
+   ```bash
+   DOMAIN=yourdomain.com docker compose up -d --build
+   ```
+3. Caddy automatically requests and renews Let's Encrypt certificates for:
+   - `https://scyther.yourdomain.com`
+   - `https://rubric.yourdomain.com`
+   - `https://aegis.yourdomain.com`
+   - `https://crucible.yourdomain.com`
+   - `https://torrent.yourdomain.com`
+   - `https://api.yourdomain.com`
+
+---
+
+## 6. Render Blueprint Deployment
+
+If you prefer Render, the repository includes [`render.yaml`](file:///c:/Users/Taylith/scyther/render.yaml):
+
+1. In Render Dashboard, click **New +** -> **Blueprint**.
+2. Connect `luxraye/scyther`.
+3. Render reads `render.yaml` and spins up the unified web service and static sites.
+4. *Tip*: If on Render Free Tier, deploy just the `bloodchain-gateway` Docker service, which natively hosts all 5 apps under subpaths (`/scyther`, `/rubric`, `/aegis`, `/crucible`, `/torrent`, `/api`).
+
+---
+
+## 7. Environment Variables
 
 Create a `.env` file in the root directory (based on `.env.example`):
 
@@ -167,8 +243,8 @@ FABRIC_NODE_URL=http://localhost:3001
 GEMINI_API_KEY=your_gemini_api_key_here
 
 # Firebase Web App Config (already embedded with fallback)
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_API_KEY=AIzaSyCYZ_4DdKT3lsjI8h5ElCa6dFoXCUVXJsE
+VITE_FIREBASE_AUTH_DOMAIN=gen-lang-client-0545872704.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=gen-lang-client-0545872704
 VITE_FIREBASE_STORAGE_BUCKET=gen-lang-client-0545872704.firebasestorage.app
 ```

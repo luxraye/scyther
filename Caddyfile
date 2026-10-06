@@ -1,0 +1,37 @@
+# ─── Caddyfile: Automatic Let's Encrypt SSL for All Sovereign Subdomains ────
+# Set your domain in environment variable DOMAIN (e.g. DOMAIN=example.com)
+
+# 1. Citizen Donor Portal
+scyther.{$DOMAIN:localhost} {
+    reverse_proxy scyther:80
+}
+
+# 2. National Operations Command
+rubric.{$DOMAIN:localhost} {
+    reverse_proxy rubric:80
+}
+
+# 3. Bedside Transfusion Safety Tablet
+aegis.{$DOMAIN:localhost} {
+    reverse_proxy aegis:80
+}
+
+# 4. Serology Lab & Fractionation Desk
+crucible.{$DOMAIN:localhost} {
+    reverse_proxy crucible:80
+}
+
+# 5. IoT Cold-Chain Logistics Hub
+torrent.{$DOMAIN:localhost} {
+    reverse_proxy torrent:80
+}
+
+# 6. Central API Gateway, SSE Event Bus & Fabric Proxy
+api.{$DOMAIN:localhost} {
+    reverse_proxy gateway:3000
+}
+
+# 7. Root Sovereign Suite Navigation Hub
+{$DOMAIN:localhost} {
+    reverse_proxy gateway:3000
+}

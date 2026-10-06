@@ -99,6 +99,34 @@ services:
     networks:
       - bloodchain-net
 
+  # ─── Caddy: Automatic Let's Encrypt SSL Gateway for Custom Subdomains ─────
+  caddy:
+    image: caddy:alpine
+    container_name: bloodchain-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - gateway
+      - scyther
+      - rubric
+      - aegis
+      - crucible
+      - torrent
+    networks:
+      - bloodchain-net
+
 networks:
   bloodchain-net:
     driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
