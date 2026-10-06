@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Production builds
+dist/
+**/dist/
+build/
+**/build/
+
+# Vite caches
+.vite/
+**/.vite/
+.vite-temp/
+**/.vite-temp/
+
+# Archives & Temporary files
+*.zip
+_luxraye_repo/
+
+# Logs & Environment
+*.log
+.DS_Store
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE & Gemini artifacts
+.system_generated/
+.antigravity/
+.gemini/
+.idea/
+.vscode/

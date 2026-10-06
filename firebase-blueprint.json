@@ -1,0 +1,151 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated user with role and profile details",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["DONOR", "LAB_TECH", "LOGISTICS_COURIER", "CLINICAL_STAFF", "NATIONAL_OPERATOR", "AUDITOR"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "BloodUnit": {
+      "title": "BloodUnit",
+      "description": "Blood unit with ISBT-128 DIN, blood group, telemetry, and custody status",
+      "type": "object",
+      "properties": {
+        "din": { "type": "string" },
+        "donorAnonymizedId": { "type": "string" },
+        "bloodType": { "type": "string" },
+        "componentType": { "type": "string" },
+        "volumeMl": { "type": "number" },
+        "collectedAt": { "type": "string" },
+        "expiresAt": { "type": "string" },
+        "currentFacility": { "type": "string" },
+        "status": { "type": "string" },
+        "storageTempRange": { "type": "object" },
+        "labTests": { "type": "object" },
+        "telemetryLogs": { "type": "array" }
+      },
+      "required": ["din", "bloodType", "componentType", "status"]
+    },
+    "BlockchainBlock": {
+      "title": "BlockchainBlock",
+      "description": "Sealed block in the immutable Merkle DAG custody chain",
+      "type": "object",
+      "properties": {
+        "index": { "type": "number" },
+        "timestamp": { "type": "string" },
+        "unitDIN": { "type": "string" },
+        "eventType": { "type": "string" },
+        "actor": { "type": "object" },
+        "payload": { "type": "object" },
+        "previousHash": { "type": "string" },
+        "hash": { "type": "string" }
+      },
+      "required": ["index", "timestamp", "unitDIN", "eventType", "previousHash", "hash"]
+    },
+    "HospitalRequest": {
+      "title": "HospitalRequest",
+      "description": "Hospital blood unit requisition",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "department": { "type": "string" },
+        "urgency": { "type": "string" },
+        "bloodType": { "type": "string" },
+        "componentType": { "type": "string" },
+        "unitsNeeded": { "type": "number" },
+        "requestedAt": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "hospitalName", "urgency", "bloodType", "unitsNeeded", "status"]
+    },
+    "StaffAccount": {
+      "title": "StaffAccount",
+      "description": "Provisioned specialized staff account with role and password state",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "fullName": { "type": "string" },
+        "role": { "type": "string" },
+        "facility": { "type": "string" },
+        "badgeNumber": { "type": "string" },
+        "mustChangePassword": { "type": "boolean" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "email", "fullName", "role", "facility", "mustChangePassword"]
+    },
+    "DonorProfile": {
+      "title": "DonorProfile",
+      "description": "Donor record with 4-tier verification and uploaded documentation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "anonymizedHash": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "bloodType": { "type": "string" },
+        "totalDonations": { "type": "number" },
+        "tier": { "type": "number" },
+        "eligibilityStatus": { "type": "string" },
+        "uploadedDocuments": { "type": "array" }
+      },
+      "required": ["id", "fullName", "email", "bloodType", "tier"]
+    },
+    "SystemIssue": {
+      "title": "SystemIssue",
+      "description": "Operational issue across apps requiring admin resolution",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "severity": { "type": "string" },
+        "facility": { "type": "string" },
+        "affectedEntity": { "type": "string" },
+        "status": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "title", "category", "severity", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "entities/User" },
+      "description": "User profile documents"
+    },
+    "/bloodUnits/{unitId}": {
+      "schema": { "$ref": "entities/BloodUnit" },
+      "description": "Live blood unit catalog and lifecycle status"
+    },
+    "/blockchainBlocks/{blockId}": {
+      "schema": { "$ref": "entities/BlockchainBlock" },
+      "description": "Cryptographically sealed blocks in the distributed chain"
+    },
+    "/hospitalRequests/{requestId}": {
+      "schema": { "$ref": "entities/HospitalRequest" },
+      "description": "Emergency and routine hospital blood orders"
+    },
+    "/staffAccounts/{accountId}": {
+      "schema": { "$ref": "entities/StaffAccount" },
+      "description": "Provisioned clinical and administrative staff records"
+    },
+    "/donorProfiles/{donorId}": {
+      "schema": { "$ref": "entities/DonorProfile" },
+      "description": "Multi-tier donor profiles and document verification records"
+    },
+    "/systemIssues/{issueId}": {
+      "schema": { "$ref": "entities/SystemIssue" },
+      "description": "Cross-app issues and dispute resolution records"
+    }
+  }
+}

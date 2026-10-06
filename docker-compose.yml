@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # ─── Bloodchain Central API Gateway & Event Bus (Port 3000) ───────────────
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    container_name: bloodchain-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - FABRIC_NODE_URL=${FABRIC_NODE_URL:-http://fabric-node:3001}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - bloodchain-net
+
+  # ─── 1. Scyther: Citizen Donor Portal (Port 3002) ──────────────────────────
+  scyther:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app-scyther
+    container_name: bloodchain-scyther
+    restart: unless-stopped
+    ports:
+      - "3002:80"
+    depends_on:
+      - gateway
+    networks:
+      - bloodchain-net
+
+  # ─── 2. Rubric: National Operations Command & Situation Room (Port 3003) ──
+  rubric:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app-rubric
+    container_name: bloodchain-rubric
+    restart: unless-stopped
+    ports:
+      - "3003:80"
+    depends_on:
+      - gateway
+    networks:
+      - bloodchain-net
+
+  # ─── 3. Aegis: Clinical Bedside Transfusion Safety Tablet (Port 3004) ──────
+  aegis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app-aegis
+    container_name: bloodchain-aegis
+    restart: unless-stopped
+    ports:
+      - "3004:80"
+    depends_on:
+      - gateway
+    networks:
+      - bloodchain-net
+
+  # ─── 4. Crucible: Serology Lab & Fractionation Station (Port 3005) ────────
+  crucible:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app-crucible
+    container_name: bloodchain-crucible
+    restart: unless-stopped
+    ports:
+      - "3005:80"
+    depends_on:
+      - gateway
+    networks:
+      - bloodchain-net
+
+  # ─── 5. Torrent: IoT Cold-Chain Logistics Hub & Courier Mesh (Port 3006) ──
+  torrent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app-torrent
+    container_name: bloodchain-torrent
+    restart: unless-stopped
+    ports:
+      - "3006:80"
+    depends_on:
+      - gateway
+    networks:
+      - bloodchain-net
+
+networks:
+  bloodchain-net:
+    driver: bridge

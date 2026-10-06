@@ -1,0 +1,6 @@
+{
+  "name": "Bloodchain",
+  "description": "National closed chain of custody and blockchain provenance suite for blood donation, laboratory release, cold-chain transport, and clinical transfusion.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

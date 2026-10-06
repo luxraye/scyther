@@ -1,0 +1,62 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // User profile collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+
+    // Blood units collection
+    match /bloodUnits/{unitId} {
+      allow read: if true; // Publicly verifiable provenance
+      allow write: if isSignedIn();
+    }
+
+    // Immutable blockchain blocks
+    match /blockchainBlocks/{blockId} {
+      allow read: if true; // Publicly inspectable ledger
+      allow create: if isSignedIn();
+      allow update, delete: if false; // Strict immutability: blocks cannot be modified or deleted!
+    }
+
+    // Hospital requisitions
+    match /hospitalRequests/{requestId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Provisioned staff accounts
+    match /staffAccounts/{accountId} {
+      allow read: if true; // Staff lookup for authentication
+      allow write: if isSignedIn();
+    }
+
+    // Multi-tier donor profiles and document verification
+    match /donorProfiles/{donorId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Cross-app operational issues
+    match /systemIssues/{issueId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Test connection doc
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+  }
+}
