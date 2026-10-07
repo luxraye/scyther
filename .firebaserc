@@ -6,7 +6,7 @@
     "gen-lang-client-0545872704": {
       "hosting": {
         "portal": [
-          "bloodchain-portal"
+          "default-portal"
         ],
         "scyther": [
           "bloodchain-scyther"

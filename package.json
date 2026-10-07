@@ -17,6 +17,8 @@
     "build:torrent": "vite build apps/torrent",
     "start": "node server.ts",
     "build": "vite build",
+    "build:all": "npm run build && npm run build:scyther && npm run build:rubric && npm run build:aegis && npm run build:crucible && npm run build:torrent",
+    "deploy:hosting": "npx -p firebase-tools firebase deploy --only hosting",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js apps/*/dist",
     "lint": "tsc --noEmit"

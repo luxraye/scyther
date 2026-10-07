@@ -10,13 +10,6 @@
       ],
       "rewrites": [
         {
-          "source": "/api/**",
-          "run": {
-            "serviceId": "bloodchain-gateway",
-            "region": "africa-south1"
-          }
-        },
-        {
           "source": "**",
           "destination": "/index.html"
         }
@@ -31,13 +24,6 @@
         "**/node_modules/**"
       ],
       "rewrites": [
-        {
-          "source": "/api/**",
-          "run": {
-            "serviceId": "bloodchain-gateway",
-            "region": "africa-south1"
-          }
-        },
         {
           "source": "**",
           "destination": "/index.html"
@@ -54,13 +40,6 @@
       ],
       "rewrites": [
         {
-          "source": "/api/**",
-          "run": {
-            "serviceId": "bloodchain-gateway",
-            "region": "africa-south1"
-          }
-        },
-        {
           "source": "**",
           "destination": "/index.html"
         }
@@ -75,13 +54,6 @@
         "**/node_modules/**"
       ],
       "rewrites": [
-        {
-          "source": "/api/**",
-          "run": {
-            "serviceId": "bloodchain-gateway",
-            "region": "africa-south1"
-          }
-        },
         {
           "source": "**",
           "destination": "/index.html"
@@ -98,13 +70,6 @@
       ],
       "rewrites": [
         {
-          "source": "/api/**",
-          "run": {
-            "serviceId": "bloodchain-gateway",
-            "region": "africa-south1"
-          }
-        },
-        {
           "source": "**",
           "destination": "/index.html"
         }
@@ -119,13 +84,6 @@
         "**/node_modules/**"
       ],
       "rewrites": [
-        {
-          "source": "/api/**",
-          "run": {
-            "serviceId": "bloodchain-gateway",
-            "region": "africa-south1"
-          }
-        },
         {
           "source": "**",
           "destination": "/index.html"
