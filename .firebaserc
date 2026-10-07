@@ -1,0 +1,29 @@
+{
+  "projects": {
+    "default": "gen-lang-client-0545872704"
+  },
+  "targets": {
+    "gen-lang-client-0545872704": {
+      "hosting": {
+        "portal": [
+          "bloodchain-portal"
+        ],
+        "scyther": [
+          "bloodchain-scyther"
+        ],
+        "rubric": [
+          "bloodchain-rubric"
+        ],
+        "aegis": [
+          "bloodchain-aegis"
+        ],
+        "crucible": [
+          "bloodchain-crucible"
+        ],
+        "torrent": [
+          "bloodchain-torrent"
+        ]
+      }
+    }
+  }
+}
